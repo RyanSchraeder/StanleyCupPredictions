@@ -3,7 +3,6 @@ The uncertainty of sports continues to fascinate me, so with a go at statistical
 
 ![NHL](images/NHL-Logo.jpeg)
 
-
 Data:
 https://www.hockey-reference.com/
 
