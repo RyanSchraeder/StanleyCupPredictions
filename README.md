@@ -1,7 +1,7 @@
 # Stanley Cup & Season NHL Game Predictions
 
 <p align="center">
-  <img src="/images/NHL-Logo.jpeg" />
+  <img src="/images/nhl-logo-transparent.jpg" />
   <img src="/images/ice-hockey-rink-670px.jpg" />
 </p>
 
