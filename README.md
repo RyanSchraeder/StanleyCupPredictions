@@ -7,4 +7,4 @@ Data:
 https://www.hockey-reference.com/
 
 ## Model Evaluation (Est. 6/12/2022)
-![confusion_matrix](/images/confusion_matrix.png)
+> ![confusion_matrix](/images/confusion_matrix.png)
