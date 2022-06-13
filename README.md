@@ -12,7 +12,7 @@ https://www.hockey-reference.com/
 ## Model Evaluation
 
 ### First Model
-> <p align="center">
+<p align="center">
     <img src="/images/stacked_svm_accuracy.png"/>
   </p>
 
