@@ -9,10 +9,15 @@ The uncertainty of sports continues to fascinate me, so with a go at statistical
 Data:
 https://www.hockey-reference.com/
 
-## Model Evaluation (Est. 6/12/2022)
+## Model Evaluation
 
+### First Model
+> <p align="center">
+    <img src="/images/stacked_svm_accuracy.png"/>
+  </p>
+
+### Improved Model
 <p align="center">
-  <img src="/images/stacked_svm_accuracy.png"/>
   <img src="/images/model_performance.png"/>
   <img src="/images/confusion_matrix.png" width="3200" height="300"/>
 </p>
