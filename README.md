@@ -19,6 +19,9 @@ https://www.hockey-reference.com/
 ### Improved Model
 <p align="center">
   <img src="/images/model_performance.png"/>
-  <img src="/images/confusion_matrix.png" width="3200" height="300"/>
 </p>
 
+### Final Confusion Matrix
+<p align="center">
+  <img src="/images/confusion_matrix.png"/>
+</p>
