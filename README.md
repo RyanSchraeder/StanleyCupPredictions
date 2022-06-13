@@ -1,5 +1,8 @@
 # Stanley Cup & Season NHL Game Predictions
-> ![hockey](images/ice-hockey-rink-670px.jpg)
+<p align='center'>
+  <img> src="images/NHL-Logo.jpeg" </img>
+  <img> src="images/ice-hockey-rink-670px.jpg" </img>
+</p>
 
 The uncertainty of sports continues to fascinate me, so with a go at statistical methods and experimentation, I figured I'd take my best educated guess at the team who might come out on top in 2022 based upon prior game history and team performance metrics.
 
