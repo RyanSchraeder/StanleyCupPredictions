@@ -18,6 +18,8 @@ requests = "^2.27.1"
 sklearn = "^0.0"
 pre-commit = "^2.19.0"
 xgboost = "^1.6.1"
+plotly = "^5.8.2"
+plotly-express = "^0.4.1"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^2.19.0"
