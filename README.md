@@ -1,10 +1,12 @@
 # Stanley Cup & Season NHL Game Predictions
 
-<figure align="center">
+<figure align='center'>
   <img src="/images/NHL-Logo.jpeg" alt="Photo: NHL Enterprises, L.P. © NHL 2022., All Right Reserved." />
-      <figcaption> NHL Enterprises, L.P. © NHL 2022., All Right Reserved. </figcaption> 
-  <img src="/images/ice-hockey-rink-670px.jpg" />
+  <figcaption> NHL Enterprises, L.P. © NHL 2022., All Right Reserved. </figcaption> 
 </figure>
+<p align='center'>
+  <img src="/images/ice-hockey-rink-670px.jpg" />
+</p>
 
 The uncertainty of sports continues to fascinate me, so with a go at statistical methods and experimentation, I figured I'd take my best educated guess at the team who might come out on top in 2022 based upon prior game history and team performance metrics.
 
