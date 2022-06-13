@@ -4,3 +4,6 @@ The uncertainty of sports continues to fascinate me, so with a go at statistical
 
 Data:
 https://www.hockey-reference.com/
+
+## Model Evaluation (Est. 6/12/2022)
+![confusion_matrix](/images/confusion_matrix.png)
