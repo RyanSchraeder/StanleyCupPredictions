@@ -418,6 +418,14 @@ traitlets = ">=5.1.0"
 test = ["pytest (>=6.0)", "pytest-cov", "flaky", "ipyparallel", "pre-commit", "pytest-timeout"]
 
 [[package]]
+name = "ipynb"
+version = "0.5.1"
+description = "Package / Module importer for importing code from Jupyter Notebook files (.ipynb)"
+category = "main"
+optional = false
+python-versions = ">=3.4"
+
+[[package]]
 name = "ipython"
 version = "8.3.0"
 description = "IPython: Productive Interactive Computing"
@@ -1557,7 +1565,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8, <3.11"
-content-hash = "c248901ef5d04f9ffe2974c95ec2564f5f4e0413b2b238944e39791c838dd803"
+content-hash = "a8cbb0f58cee2d17cd6419e0d7e49b23a07b0c1d2d44209a2083363c584ac9a7"
 
 [metadata.files]
 aiohttp = [
@@ -1930,6 +1938,10 @@ importlib-resources = [
 ipykernel = [
     {file = "ipykernel-6.13.0-py3-none-any.whl", hash = "sha256:2b0987af43c0d4b62cecb13c592755f599f96f29aafe36c01731aaa96df30d39"},
     {file = "ipykernel-6.13.0.tar.gz", hash = "sha256:0e28273e290858393e86e152b104e5506a79c13d25b951ac6eca220051b4be60"},
+]
+ipynb = [
+    {file = "ipynb-0.5.1-py3-none-any.whl", hash = "sha256:9686aafce6fd58ec160fa6ba649a7810df89cc0f06a317188ac5e59fd728e325"},
+    {file = "ipynb-0.5.1.tar.gz", hash = "sha256:8d834c777ca3885289938728cc382f081c86a58e92961e86f0aba60c96938ce5"},
 ]
 ipython = [
     {file = "ipython-8.3.0-py3-none-any.whl", hash = "sha256:341456643a764c28f670409bbd5d2518f9b82c013441084ff2c2fc999698f83b"},
