@@ -25,3 +25,8 @@ https://www.hockey-reference.com/
 <p align="center">
   <img src="/images/confusion_matrix.png"/>
 </p>
+
+### Stanley Cup Game Predictions 
+<p align="center">
+  <img src="/images/stanley_cup_predictions.png"/>
+</p>
