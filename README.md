@@ -18,7 +18,7 @@ I added the Stanley Cup Final game schedule with imputed averages with the _exce
 #### Away & Home Game Split
 <p align="center">
   <img src="/images/v2_away_home_performance.png" />
-  <img src="v2_confusion_matrix_stanley_cup_away.png" />
-  <img src="v2_confusion_matrix_stanley_cup_home.png" />
+  <img src="/images/v2_confusion_matrix_stanley_cup_away.png" />
+  <img src="/images/v2_confusion_matrix_stanley_cup_home.png" />
 </p>
 
