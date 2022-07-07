@@ -17,6 +17,7 @@ The first iteration of the model consists of the ensemble of:
 - Logistic Regression
 - Non-Linear SVM
 - Decision Trees
+
 _Stacking Model: Linear SVM_
 <br>
 #### Away & Home Game Split
@@ -31,6 +32,7 @@ _Stacking Model: Linear SVM_
 The final iteration of the model consists of the stack of: 
 - Multi-nomial Naive Bayes
 - Logistic Regression
+
 _Stacking Model: Extreme Gradient Boosting Classifier (XGBoost)_
 <br>
 #### Away & Home Game Split
