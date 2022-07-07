@@ -22,3 +22,9 @@ I added the Stanley Cup Final game schedule with imputed averages with the _exce
   <img src="/images/v2_confusion_matrix_stanley_cup_home.png" />
 </p>
 
+#### Predictions
+Predictions were based upon unknown data within the Stanley Cup 2022 series, which had averages by team in place of null values. 
+<p align="center">
+  <img src="sim_stanley_cup_schedule.PNG" />
+  <img src="/images/xgb_stanley_cup_predictions.png" />
+</p>
