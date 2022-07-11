@@ -39,8 +39,8 @@ _Stacking Model: Extreme Gradient Boosting Classifier (XGBoost)_
 #### Away & Home Game Split
 <p align="center">
   <img src="/images/xgb_final_model_performance.PNG" />
-  <img src="/images/final_confusion_matrix_away.png" />
-  <img src="/images/final_confusion_matrix_home.png" />
+  <img src="/images/final_confusion_matrix_stanley_cup_away.png" />
+  <img src="/images/final_confusion_matrix_stanley_cup_home.png" />
 </p>
 
 #### Predictions
