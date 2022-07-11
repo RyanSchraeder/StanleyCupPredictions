@@ -28,22 +28,73 @@ _Stacking Model: Linear SVM_
 </p>
 <br>
 <br>
+
 ### After Adding Goals per Game
 The final iteration of the model consists of the stack of: 
 - Multi-nomial Naive Bayes
 - Logistic Regression
 
 _Stacking Model: Extreme Gradient Boosting Classifier (XGBoost)_
-<br>
+
 #### Away & Home Game Split
 <p align="center">
   <img src="/images/xgb_final_model_performance.PNG" />
   <img src="/images/final_confusion_matrix_away.png" />
   <img src="/images/final_confusion_matrix_home.png" />
 </p>
+
 #### Predictions
 Predictions were based upon unknown data within the Stanley Cup 2022 series, which consisted of averages by team, average duration of an NHL game, and average outcome in place of null values. 
 <p align="center">
   <img src="/images/sim_stanley_cup_schedule.PNG" />
   <img src="/images/xgb_stanley_cup_predictions.png" />
 </p>
+
+_ACTUAL STANLEY CUP RECORD_
+<table>
+    <tr>
+        <td>date</td>
+        <td>away_team</td>
+        <td>home_team</td>
+        <td>winner</td>
+    </tr>
+    <tr>
+        <td>2022-06-15</td>
+        <td>Tampa Bay Lightning</td>
+        <td>Colorado Avalanche</td>
+        <td>Colorado Avalanche</td>
+    </tr>
+    <tr>
+        <td>2022-06-18</td>
+        <td>Tampa Bay Lightning</td>
+        <td>Colorado Avalanche</td>
+        <td>Colorado Avalanche</td>
+    </tr>
+    <tr>
+        <td>2022-06-20</td>
+        <td>Colorado Avalanche</td>
+        <td>Tampa Bay Lightning</td>
+        <td>Tampa Bay Lightning</td>
+    </tr>
+    <tr>
+        <td>2022-06-22</td>
+        <td>Colorado Avalanche</td>
+        <td>Tampa Bay Lightning</td>
+        <td>Colorado Avalanche</td>
+    </tr>
+    <tr>
+        <td>2022-06-24</td>
+        <td>Tampa Bay Lightning</td>
+        <td>Colorado Avalanche</td>
+        <td>Tampa Bay Lightning</td>
+    </tr>
+    <tr>
+        <td>2022-06-26</td>
+        <td>Colorado Avalanche</td>
+        <td>Tampa Bay Lightning</td>
+        <td>Colorado Avalanche</td>
+    </tr>
+</table>
+
+
+See the project & code [here](https://github.com/RyanSchraeder/StanleyCupPredictions) 🏒
