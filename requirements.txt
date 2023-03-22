@@ -1,0 +1,16 @@
+# snowpark
+pandas
+numpy
+scikit-learn
+lightgbm
+xgboost
+scipy
+seaborn
+cloudpickle
+cachetools
+imbalanced-learn
+optuna
+tensorflow
+matplotlib
+boto3
+
