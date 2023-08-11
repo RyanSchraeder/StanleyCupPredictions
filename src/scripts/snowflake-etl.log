@@ -1,0 +1,5 @@
+2023-03-24 12:39:50,708 Begin process
+2023-03-24 12:40:00,666 Found credentials in shared credentials file: ~/.aws/credentials
+2023-03-24 12:40:04,241 Role not accepted for access. Please use a qualified role.
+2023-03-24 12:40:04,821 Found credentials in shared credentials file: ~/.aws/credentials
+2023-03-24 12:40:12,093 Successfully retrieved S3 data: <botocore.client.S3 object at 0x00000293483BBD30>
