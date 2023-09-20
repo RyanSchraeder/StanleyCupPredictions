@@ -5,7 +5,7 @@ import botocore.exceptions
 from logger import logger
 # from secrets_access import get_secret
 import snowflake.connector
-from snowflake.snowpark import Session
+# from snowflake.snowpark import Session
 import os
 from dotenv import load_dotenv, find_dotenv
 
@@ -20,7 +20,7 @@ def get_snowflake_connection(method):
     """ Confirm Access to Snowflake"""
     try:
         params = {
-            "user": os.getenv('USER'),
+            "user": os.getenv('SFUSER'),
             "password": os.getenv('SFPW'),
             "account": os.getenv('ACCT'),
             "warehouse": os.getenv('WAREHOUSE'),
@@ -40,9 +40,9 @@ def get_snowflake_connection(method):
 
             return conn
 
-        if method == 'spark':
-            session = Session.builder.configs(params).create()
-            return session
+        # if method == 'spark':
+        #     session = Session.builder.configs(params).create()
+        #     return session
 
     except Exception as e:
         raise e
@@ -59,19 +59,20 @@ def s3_conn(func):
         # Stores the passed args and kwargs into available lists
         arg_vars, kw_vars = [arg for arg in args], [arg for arg in kwargs]
 
-        # CHECK ONE
-        # Check if the bucket exists. If a bucket exists, it should be passed into a function as an argument.
-        buckets = [name['Name'] for name in s3_client.list_buckets()['Buckets']]
-        matches = [name for name in arg_vars if name in buckets]
-        if not matches:
-            logger.error(f'S3 Bucket provided does not exist: {arg_vars}')
+        try:
+            if type(func) != str:
+                pass
+            else:
+                # Check if the bucket exists. If a bucket exists, it should be passed into a function as an argument.
+                buckets = [name['Name'] for name in s3_client.list_buckets()['Buckets']]
+                matches = [name for name in arg_vars if name in buckets]
+                if not matches:
+                    logger.error(f'S3 Bucket provided does not exist: {arg_vars}')
 
-        return func(*args, **kwargs)
+            return func(*args, **kwargs)
+
+        except Exception as e:
+            logger.error(f"Something went wrong: {e}")
+            sys.exit(-1)
 
     return wrapper_s3_checks
-
-
-
-
-
-

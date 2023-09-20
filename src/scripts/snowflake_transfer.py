@@ -1,5 +1,5 @@
 import pandas as pd
-import logging
+import argparse
 import json
 import datetime as dt
 import time
@@ -142,141 +142,109 @@ snowflake_cleaned_ingest = {
 }
 
 
-def file_parser(path):
-    dataframes = []
-    filenames = []
-    path = os.path.join(path)
+class SnowflakeIngest(object):
 
-    for root, dirs, files in os.walk(path, topdown=False):
-        print(root)
-        print(dirs)
-        print(files)
-        for name in files:
-            filenames.append(name)
-            df = pd.read_csv(os.path.join(root, name))
-            dataframes.append(df)
+    def __init__(self, s3_path, snowflake_conn):
+        """
+            :param s3_path: The path used to access S3 directories
+            :param snowflake_conn: The connection method used to connect to Snowflake: str ('standard', 'spark')
+        """
+        self.s3 = s3_path
+        self.conn = get_snowflake_connection(snowflake_conn)
+
+    @staticmethod
+    def file_parser(local_path):
+        """ Use S3 to access files and create dataframes """
+        dataframes = []
+        filenames = []
+
+        for root, dirs, files in os.walk(local_path, topdown=False):
+            logger.info(
+                f"""
+                root: {root} \n
+                dirs: {dirs} \n
+                files: {files} \n
+                """
+            )
+
+            for name in files:
+                filenames.append(name)
+                df = pd.read_csv(os.path.join(root, name))
+                dataframes.append(df)
+
+        return dataframes
+
+    @s3_conn
+    def s3_parser(self):
+
+        # Establish connection
+        s3_client, s3_resource = boto3.client('s3'), boto3.resource('s3')
+
+        # Retrieve S3 paths
+        my_bucket = s3_resource.Bucket(self.s3)
+        for my_bucket_object in my_bucket.objects.all():
+            logger.info(f'Folder Found: {my_bucket_object.key}')
+
+    def snowflake_query_exec(self, queries):
+        try:
+            # Cursor & Connection
+            curs, conn = self.conn.cursor(), self.conn
+            response = {}
+            for idx, query in queries.items():
+                curs.execute_async(query)
+                query_id = curs.sfqid
+                logger.info(f'Query added to queue: {query_id}')
+
+                curs.get_results_from_sfqid(query_id)
+
+                # IF THE SNOWFLAKE QUERY RETURNS DATA, STORE IT. ELSE, CONTINUE PROCESS.
+                result = curs.fetchone()
+                if result:
+                    logger.info(f'Query completed successfully and stored: {query_id}')
+                    response[idx] = result[0]
+                else:
+                    pass
+
+                while conn.is_still_running(conn.get_query_status_throw_if_error(query_id)):
+                    logger.info(f'Awaiting query completion for {query_id}')
+                    time.sleep(1)
+
+            return response
+
+        except ProgrammingError as err:
+            logger.error(f'Programming Error: {err}')
 
 
-@s3_conn
-def s3_parser(s3_buckets):
+if __name__ in "__main__":
 
-    # Establish connection
-    s3_client, s3_resource = boto3.client('s3'), boto3.resource('s3')
+    parser = argparse.ArgumentParser(
+        prog="SnowflakeIngestion",
+        description="Move data from raw S3 uploads to a produced Schema in Snowflake"
+    )
 
-    my_bucket = s3_resource.Bucket(s3_buckets)
-    for my_bucket_object in my_bucket.objects.all():
-        logger.info(my_bucket_object.key)
+    parser.add_argument('s3_path')
+    parser.add_argument('snowflake_conn')
 
+    args = parser.parse_args()
 
-def snowflake_query_exec(queries, method='standard'):
-    try:
+    s3_path = args.s3_path if args.s3_path is not None else ""
+    snowflake_conn = args.snowflake_conn if args.snowflake_conn is not None else ""
 
-        # SNOWFLAKE CONNECTION
-        conn = get_snowflake_connection(method)
+    execute = SnowflakeIngest(s3_path=s3_path, snowflake_conn=snowflake_conn)
 
-        # Cursor
-        curs = conn.cursor()
-        response = {}
-        for idx, query in queries.items():
-            curs.execute_async(query)
-            query_id = curs.sfqid
-            logger.info(f'Query added to queue: {query_id}')
+    # CREATE SCHEMA
+    schema = execute.snowflake_query_exec(snowflake_schema_queries)
 
-            curs.get_results_from_sfqid(query_id)
+    # INGEST RAW DATA
+    execute.snowflake_query_exec(snowflake_raw_ingest)
 
-            # IF THE SNOWFLAKE QUERY RETURNS DATA, STORE IT. ELSE, CONTINUE PROCESS.
-            result = curs.fetchone()
-            if result:
-                logger.info(f'Query completed successfully and stored: {query_id}')
-                response[idx] = result[0]
-            else:
-                pass
+    # PARSE RAW DATA FROM S3
+    s3 = execute.s3_parser()
 
-            while conn.is_still_running(conn.get_query_status_throw_if_error(query_id)):
-                logger.info(f'Awaiting query completion for {query_id}')
-                time.sleep(1)
-
-        return response
-
-    except ProgrammingError as err:
-        logger.error(f'Programming Error: {err}')
-
-
-# CREATE SCHEMA
-schema = snowflake_query_exec(snowflake_schema_queries, method='standard')
-
-# INGEST RAW DATA
-snowflake_query_exec(snowflake_raw_ingest, method='standard')
-
-# TRANSFORM RAW DATA
-# spark_manipulation = snowflake_query_exec(queries, method='spark')
-
-# PARSE RAW DATA FROM S3
-s3 = s3_parser('nhl-data-raw')
-
-# PARSE RAW DATA FROM STORAGE
-
-# Paths
-seasons, team_stats = os.path.join('/Users/rschraeder/Desktop/Projects/StanleyCupPredictions/data/seasons/'), os.path.join(
-    '/Users/rschraeder/Desktop/Projects/StanleyCupPredictions/data/teams/')
-
-seasons = file_parser(seasons)
-team_stats = file_parser(team_stats)
-
-# games_df = games_df.rename(columns=({
-#     'Date': 'date', 'Visitor': 'away_team', 'Home': 'home_team', 'G': 'away_goals', 'G.1': 'home_goals', 'LOG': 'length_of_game_min'
-# }))
-# games_df = games_df[['date', 'away_team', 'away_goals', 'home_team', 'home_goals', 'length_of_game_min']]
-#
-# # Transforming data
-# games_df['length_of_game_min'] = [i.replace(':', '') for i in games_df['length_of_game_min']]
-# games_df['length_of_game_min'] = [(int(i[0]) * 60) + int(i[1:]) for i in games_df['length_of_game_min']]
-#
-# games_df.date = games_df.date.apply(pd.to_datetime)
-#
-#
-# def encoding_game_outcome(dataset, away_output_colname: str, home_output_colname: str, away_goals: str,
-#                           home_goals: str) -> List[int]:
-#     dataset[f'{away_output_colname}'] = (dataset[f'{away_goals}'] - dataset[f'{home_goals}']).apply(
-#         lambda x: 1 if x > 0 else 0)
-#     dataset[f'{home_output_colname}'] = (dataset[f'{home_goals}'] - dataset[f'{away_goals}']).apply(
-#         lambda x: 1 if x > 0 else 0)
-#
-#     return dataset
-#
-#
-# games_df = encoding_game_outcome(games_df, 'away_outcome', 'home_outcome', 'away_goals', 'home_goals')
-#
-# # Output to CSV
-# games_df.to_csv(os.path.join(path, 'regular_season_clean.csv'), index=False)
-#
-# # Team name cleaning
-# team_stats_df['Team'] = [str(i).replace('*', '') for i in team_stats_df['Team']]
-#
-# # Creating Column for Total Goals
-#
-# team_stats_df['G'] = team_stats_df.GF + team_stats_df.GA
-#
-# # Creating Column for Total Power-Play Goals
-#
-# team_stats_df['PPG'] = team_stats_df.PP + team_stats_df.PPA
-#
-# # Creating Column for Total Games in Shootouts
-#
-# team_stats_df['SHOOTOUTS'] = team_stats_df.SOW + team_stats_df.SOL
-#
-#
-# def percents(df):
-#     for column, row in df.iteritems():
-#         if '%' in column:
-#             for item in row:
-#                 if item < 1:
-#                     row += row * 100
-#
-#     return df
-#
-#
-# team_stats_df = percents(team_stats_df)
-#
-# # Output to CSV
-# team_stats_df.to_csv(os.path.join(path, 'team_stats_clean.csv'), index=False)
+    # PARSE RAW DATA FROM STORAGE
+    #
+    # # Paths
+    # seasons, team_stats =
+    #
+    # seasons = file_parser(seasons)
+    # team_stats = file_parser(team_stats)
