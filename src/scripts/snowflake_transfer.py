@@ -138,12 +138,18 @@ class SnowflakeIngest(object):
         if source == 'season':
             self.url = f"{self.endpoint}NHL_{year}_games.html#games"
             self.filename = f"NHL_{year}_regular_season"
+            # Build S3 URI to correct path location
+            # s3_path = s3_path + '/season/'
         elif source == 'playoffs':
             self.url = f"{self.endpoint}NHL_{year}_games.html#games_playoffs"
             self.filename = f"NHL_{year}_playoff_season"
+            # Build S3 URI to correct path location
+            # s3_path = s3_path + '/playoffs/'
         elif source == 'stats':
             self.url = f"{self.endpoint}NHL_{year}_games.html#stats"
             self.filename = f"NHL_{year}_team_stats"
+            # Build S3 URI to correct path location
+            # s3_path = s3_path + '/playoffs/'
 
         self.s3 = s3_path
         self.conn = get_snowflake_connection(snowflake_conn)
