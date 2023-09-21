@@ -29,45 +29,6 @@ logger = logger('snowflake_transfer')
 
 # QUERY EXECUTIONS
 snowflake_schema_queries = {
-    "team_stats": """
-        create or replace table team_stats 
-        (
-            TeamId integer PRIMARY KEY not null,
-            Rk integer,
-            Team varchar(100),
-            AvAge integer,
-            GP integer,
-            W integer,
-            L integer,
-            OL integer,
-            PTS integer,
-            PTS_PERC float,
-            GF integer,
-            GA integer,
-            SOW integer,
-            SOL integer,
-            SRS integer,
-            SOS integer,
-            GFVG integer,
-            GAVG integer,
-            PP integer,
-            PPO integer,
-            PP_PERC float,
-            PPA integer,
-            PPOA integer,
-            PK_PERC float,
-            SH integer,
-            SHA integer,
-            PIMVG integer,
-            oPIMVG integer,
-            S integer,
-            S_PERC float,
-            SA integer,
-            SV_PERC float,
-            SO integer, 
-            updated_at date
-        )
-    """,
     "raw_team_stats": """
         create or replace table raw_team_stats
         (
@@ -164,54 +125,69 @@ snowflake_raw_ingest = {
 
 class SnowflakeIngest(object):
 
-    def __init__(self, endpoint, s3_path, snowflake_conn):
+    def __init__(self, source, endpoint, s3_path, snowflake_conn):
         """
             :param s3_path: The path used to access S3 directories
             :param snowflake_conn: The connection method used to connect to Snowflake: str ('standard', 'spark')
         """
         self.endpoint = endpoint
+        curr_date = dt.date.today()
+        year = curr_date.year
+
+        # Build endpoint URL
+        if source == 'season':
+            self.url = f"{self.endpoint}NHL_{year}_games.html#games"
+            self.filename = f"NHL_{year}_regular_season"
+        elif source == 'playoffs':
+            self.url = f"{self.endpoint}NHL_{year}_games.html#games_playoffs"
+            self.filename = f"NHL_{year}_playoff_season"
+        elif source == 'stats':
+            self.url = f"{self.endpoint}NHL_{year}_games.html#stats"
+            self.filename = f"NHL_{year}_team_stats"
+
         self.s3 = s3_path
         self.conn = get_snowflake_connection(snowflake_conn)
 
         # Run raw ingestion of data from source
-        output_df = self.file_parser(self.endpoint)
-        # self.s3_parser(output_df)
+        output_df = self.file_parser(self.url)
+        self.s3_parser(output_df)
 
     @staticmethod
-    def file_parser(endpoint: str):
+    def file_parser(url: str):
         """ Download raw source data and upload to S3
             Data Source: hockeyreference.com
         """
+        try:
+            response = get_legacy_session().get(url)
+            dataframes = pd.read_html(response.text)
 
-        response = get_legacy_session().get(endpoint)
-        dataframe = pd.read_html(response.text)
+            dataframe = pd.concat(dataframes, axis=0, ignore_index=True)
 
-        results = {}
+            logger.info(
+                f'Retrieved data with columns: {dataframe.columns}'
+                f'\n'
+                f'Preview: \n{dataframe.head(3)}'
+            )
 
+            return dataframe
 
-        # logger.info(
-        #     f'Retrieved data with columns: {columns}'
-        #     f'\n'
-        #     f'Preview: {dataframe.head(3)}'
-        # )
+        except Exception as e:
+            logger.error(f'An error occurred while retrieving raw data: {e}')
 
-        for table, ddl in snowflake_schema_queries.items():
-            print(ddl)
-
-        return dataframe
 
     @s3_conn
     def s3_parser(self, data):
+        try:
+            # Establish connection
+            s3_client, s3_resource = boto3.client('s3'), boto3.resource('s3')
 
-        # Establish connection
-        s3_client, s3_resource = boto3.client('s3'), boto3.resource('s3')
+            data = data.to_csv()
 
-        data = data.to_csv()
-
-        # Retrieve S3 paths
-        my_bucket = s3_resource.Bucket(self.s3)
-        for my_bucket_object in my_bucket.objects.all():
-            logger.info(f'Folder Found: {my_bucket_object.key}')
+            # Retrieve S3 paths & store raw file to s3
+            logger.info(f'Storing parsed data in S3 at {self.s3}')
+            s3_client.put_object(Bucket=self.s3, Key=self.filename, Body=data)
+        except Exception as e:
+            logger.error(f'An error occurred when storing data in S3: {e}')
 
     def snowflake_query_exec(self, queries):
         try:
@@ -250,17 +226,19 @@ if __name__ in "__main__":
         description="Move data from raw S3 uploads to a produced Schema in Snowflake"
     )
 
+    parser.add_argument('source')
     parser.add_argument('endpoint')
     parser.add_argument('s3_path')
     parser.add_argument('snowflake_conn')
 
     args = parser.parse_args()
 
+    source = args.source if args.source is not None else ""
     endpoint = args.endpoint if args.endpoint is not None else ""
     s3_path = args.s3_path if args.s3_path is not None else ""
     snowflake_conn = args.snowflake_conn if args.snowflake_conn is not None else ""
 
-    execute = SnowflakeIngest(endpoint, s3_path, snowflake_conn)
+    execute = SnowflakeIngest(source, endpoint, s3_path, snowflake_conn)
 
     # CREATE SCHEMA
     schema = execute.snowflake_query_exec(snowflake_schema_queries)
