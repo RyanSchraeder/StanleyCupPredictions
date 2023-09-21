@@ -10,6 +10,7 @@ cachetools
 imbalanced-learn
 optuna
 tensorflow
+lxml
 matplotlib
 boto3
 snowflake-connector-python[pandas]

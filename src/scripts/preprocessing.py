@@ -1,8 +1,10 @@
 # import the dataframes from the etl output to perform preprocessing and create a training and testing set
-# from snowflake_etl import
+# The regular season data and team statistics should be merged here to create the final dataset.
+# Accepts JSON data from S3 files and creates a final dataframe.
 
 import pandas as pd
 from datetime import datetime as dt
+
 
 def add_fake_data(
         data, date, away_teams, home_teams,
@@ -28,7 +30,7 @@ def add_fake_data(
 
 
 dates = ['2022-06-15', '2022-06-18', '2022-06-20', '2022-06-22', '2022-06-24', '2022-06-26']
-dates_list = [dt.datetime.strptime(date, '%Y-%m-%d') for date in dates]
+dates_list = [dt.strptime(date, '%Y-%m-%d') for date in dates]
 
 away_teams = [
     'Tampa Bay Lightning',
