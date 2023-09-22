@@ -21,11 +21,21 @@ field_delimiter = ','
 skip_header=1
 ;
 
+create or replace file format parquet type='parquet' -- creates the file format to map incoming data structure to CSV
+skip_header=1
+;
+
 CREATE STAGE nhl_raw_data
   STORAGE_INTEGRATION = "aws_s3_integration"
   URL = 's3://nhl-data-raw/'
   -- CREDENTIALS = ''
   FILE_FORMAT = csv;
+
+CREATE STAGE nhl_raw_data
+  STORAGE_INTEGRATION = "aws_s3_integration"
+  URL = 's3://nhl-data-raw/'
+  -- CREDENTIALS = ''
+  FILE_FORMAT = parquet;
 
 CREATE STAGE nhl_clean_data
   STORAGE_INTEGRATION = "aws_s3_integration"
